@@ -2,12 +2,12 @@ from flask import Blueprint, render_template, current_app, abort, g, \
     request, url_for, session, flash, redirect
 from galatea.tryton import tryton
 from flask.ext.paginate import Pagination
-from flask.ext.babel import gettext as _
+from flask.ext.babel import gettext as _, lazy_gettext as __
 from flask.ext.mail import Mail, Message
 
 blog = Blueprint('blog', __name__, template_folder='templates')
 
-DISPLAY_MSG = _('Displaying <b>{start} - {end}</b> {record_name} of <b>{total}</b>')
+DISPLAY_MSG = __('Displaying <b>{start} - {end}</b> {record_name} of <b>{total}</b>')
 
 Post = tryton.pool.get('galatea.blog.post')
 Comment = tryton.pool.get('galatea.blog.comment')
