@@ -106,7 +106,6 @@ def keys(lang, key):
         ('galatea_website', '=', GALATEA_WEBSITE),
         ('metakeywords', 'ilike', '%'+key+'%'),
         ]
-    print domain
     total = Post.search_count(domain)
     offset = (page-1)*LIMIT
 
