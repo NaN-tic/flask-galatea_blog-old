@@ -7,7 +7,7 @@ from flask.ext.mail import Mail, Message
 
 blog = Blueprint('blog', __name__, template_folder='templates')
 
-DISPLAY_MSG = lazy_gettext('Displaying <b>{start} - {end}</b> {record_name} of <b>{total}</b>')
+DISPLAY_MSG = lazy_gettext('Displaying <b>{start} - {end}</b> of <b>{total}</b>')
 
 Post = tryton.pool.get('galatea.blog.post')
 Comment = tryton.pool.get('galatea.blog.comment')
