@@ -201,7 +201,7 @@ def posts(lang):
     total = Post.search_count(domain)
     offset = (page-1)*LIMIT
 
-    order = [('create_date', 'DESC'), ('id', 'DESC')]
+    order = [('post_create_date', 'DESC'), ('id', 'DESC')]
     posts = Post.search_read(domain, offset, LIMIT, order, POST_FIELD_NAMES)
 
     pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
