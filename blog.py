@@ -1,9 +1,14 @@
 from flask import Blueprint, render_template, current_app, abort, g, \
     request, url_for, session, flash, redirect
 from galatea.tryton import tryton
+from galatea.utils import get_tryton_language
 from flask.ext.paginate import Pagination
 from flask.ext.babel import gettext as _, lazy_gettext
 from flask.ext.mail import Mail, Message
+from trytond.config import config as tryton_config
+from whoosh import index
+from whoosh.qparser import MultifieldParser
+import os
 
 blog = Blueprint('blog', __name__, template_folder='templates')
 
@@ -16,9 +21,77 @@ User = tryton.pool.get('res.user')
 GALATEA_WEBSITE = current_app.config.get('TRYTON_GALATEA_SITE')
 LIMIT = current_app.config.get('TRYTON_PAGINATION_BLOG_LIMIT', 20)
 COMMENTS = current_app.config.get('TRYTON_BLOG_COMMENTS', True)
+WHOOSH_MAX_LIMIT = current_app.config.get('WHOOSH_MAX_LIMIT', 500)
 
 POST_FIELD_NAMES = ['name', 'slug', 'description', 'comment', 'comments',
     'metakeywords', 'create_uid', 'create_uid.name', 'post_create_date']
+BLOG_SCHEMA_PARSE_FIELDS = ['title', 'content']
+
+@blog.route("/search/", methods=["GET"], endpoint="search")
+@tryton.transaction()
+def search(lang):
+    '''Search'''
+    WHOOSH_BLOG_DIR = current_app.config.get('WHOOSH_BLOG_DIR')
+    if not WHOOSH_BLOG_DIR:
+        abort(404)
+
+    db_name = current_app.config.get('TRYTON_DATABASE')
+    locale = get_tryton_language(lang)
+
+    schema_dir = os.path.join(tryton_config.get('database', 'path'),
+        db_name, 'whoosh', WHOOSH_BLOG_DIR, locale.lower())
+
+    if not os.path.exists(schema_dir):
+        abort(404)
+
+    #breadcumbs
+    breadcrumbs = [{
+        'slug': url_for('.posts', lang=g.language),
+        'name': _('Blog'),
+        }, {
+        'slug': url_for('.search', lang=g.language),
+        'name': _('Search'),
+        }]
+
+    q = request.args.get('q')
+    if not q:
+        return render_template('blog-search.html',
+                posts=[],
+                breadcrumbs=breadcrumbs,
+                pagination=None,
+                q=None,
+                )
+
+    # Get posts from schema results
+    try:
+        page = int(request.args.get('page', 1))
+    except ValueError:
+        page = 1
+
+    # Search
+    ix = index.open_dir(schema_dir)
+    query = q.replace('+', ' AND ').replace('-', ' NOT ')
+    query = MultifieldParser(BLOG_SCHEMA_PARSE_FIELDS, ix.schema).parse(query)
+
+    with ix.searcher() as s:
+        all_results = s.search_page(query, 1, pagelen=WHOOSH_MAX_LIMIT)
+        total = all_results.scored_length()
+        results = s.search_page(query, page, pagelen=LIMIT) # by pagination
+        res = [result.get('id') for result in results]
+
+    domain = [('id', 'in', res)]
+    order = [('post_create_date', 'DESC'), ('id', 'DESC')]
+
+    posts = Post.search_read(domain, order=order, fields_names=POST_FIELD_NAMES)
+
+    pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
+
+    return render_template('blog-search.html',
+            posts=posts,
+            pagination=pagination,
+            breadcrumbs=breadcrumbs,
+            q=q,
+            )
 
 @blog.route("/comment", methods=['POST'], endpoint="comment")
 @tryton.transaction()
