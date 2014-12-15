@@ -14,6 +14,7 @@ blog = Blueprint('blog', __name__, template_folder='templates')
 
 DISPLAY_MSG = lazy_gettext('Displaying <b>{start} - {end}</b> of <b>{total}</b>')
 
+Website = tryton.pool.get('galatea.website')
 Post = tryton.pool.get('galatea.blog.post')
 Comment = tryton.pool.get('galatea.blog.comment')
 User = tryton.pool.get('res.user')
@@ -31,6 +32,13 @@ BLOG_SCHEMA_PARSE_FIELDS = ['title', 'content']
 @tryton.transaction()
 def search(lang):
     '''Search'''
+    websites = Website.search([
+        ('id', '=', GALATEA_WEBSITE),
+        ], limit=1)
+    if not websites:
+        abort(404)
+    website, = websites
+
     WHOOSH_BLOG_DIR = current_app.config.get('WHOOSH_BLOG_DIR')
     if not WHOOSH_BLOG_DIR:
         abort(404)
@@ -87,6 +95,7 @@ def search(lang):
     pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
 
     return render_template('blog-search.html',
+            website=website,
             posts=posts,
             pagination=pagination,
             breadcrumbs=breadcrumbs,
@@ -97,6 +106,13 @@ def search(lang):
 @tryton.transaction()
 def comment(lang):
     '''Add Comment'''
+    websites = Website.search([
+        ('id', '=', GALATEA_WEBSITE),
+        ], limit=1)
+    if not websites:
+        abort(404)
+    website, = websites
+
     post = request.form.get('post')
     comment = request.form.get('comment')
 
@@ -141,6 +157,13 @@ def comment(lang):
 @tryton.transaction()
 def post(lang, slug):
     '''Post detaill'''
+    websites = Website.search([
+        ('id', '=', GALATEA_WEBSITE),
+        ], limit=1)
+    if not websites:
+        abort(404)
+    website, = websites
+
     posts = Post.search([
         ('slug', '=', slug),
         ('active', '=', True),
@@ -160,6 +183,7 @@ def post(lang, slug):
         }]
 
     return render_template('blog-post.html',
+            website=website,
             post=post,
             breadcrumbs=breadcrumbs,
             cache_prefix='blog-post-%s-%s' % (post.id, lang),
@@ -169,6 +193,13 @@ def post(lang, slug):
 @tryton.transaction()
 def keys(lang, key):
     '''Posts by Key'''
+    websites = Website.search([
+        ('id', '=', GALATEA_WEBSITE),
+        ], limit=1)
+    if not websites:
+        abort(404)
+    website, = websites
+
     try:
         page = int(request.args.get('page', 1))
     except ValueError:
@@ -197,6 +228,7 @@ def keys(lang, key):
         }]
 
     return render_template('blog-key.html',
+            website=website,
             posts=posts,
             pagination=pagination,
             breadcrumbs=breadcrumbs,
@@ -207,6 +239,13 @@ def keys(lang, key):
 @tryton.transaction()
 def users(lang, user):
     '''Posts by User'''
+    websites = Website.search([
+        ('id', '=', GALATEA_WEBSITE),
+        ], limit=1)
+    if not websites:
+        abort(404)
+    website, = websites
+
     try:
         user = int(user)
     except:
@@ -251,6 +290,7 @@ def users(lang, user):
         }]
 
     return render_template('blog-user.html',
+            website=website,
             posts=posts,
             user=user,
             pagination=pagination,
@@ -262,6 +302,13 @@ def users(lang, user):
 @tryton.transaction()
 def posts(lang):
     '''Posts'''
+    websites = Website.search([
+        ('id', '=', GALATEA_WEBSITE),
+        ], limit=1)
+    if not websites:
+        abort(404)
+    website, = websites
+
     try:
         page = int(request.args.get('page', 1))
     except ValueError:
@@ -286,6 +333,7 @@ def posts(lang):
         }]
 
     return render_template('blog.html',
+            website=website,
             posts=posts,
             pagination=pagination,
             breadcrumbs=breadcrumbs,
