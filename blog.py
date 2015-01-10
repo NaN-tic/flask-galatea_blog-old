@@ -28,6 +28,14 @@ POST_FIELD_NAMES = ['name', 'slug', 'description', 'comment', 'comments',
     'metakeywords', 'create_uid', 'create_uid.name', 'post_create_date']
 BLOG_SCHEMA_PARSE_FIELDS = ['title', 'content']
 
+def _visibility():
+    visibility = ['public']
+    if session.get('logged_in'):
+        visibility.append('register')
+    if session.get('manager'):
+        visibility.append('manager')
+    return visibility
+
 @blog.route("/search/", methods=["GET"], endpoint="search")
 @tryton.transaction()
 def search(lang):
@@ -87,7 +95,11 @@ def search(lang):
         results = s.search_page(query, page, pagelen=LIMIT) # by pagination
         res = [result.get('id') for result in results]
 
-    domain = [('id', 'in', res)]
+    domain = [
+        ('id', 'in', res),
+        ('active', '=', True),
+        ('visibility', 'in', _visibility()),
+        ]
     order = [('post_create_date', 'DESC'), ('id', 'DESC')]
 
     posts = Post.search_read(domain, order=order, fields_names=POST_FIELD_NAMES)
@@ -119,6 +131,7 @@ def comment(lang):
     domain = [
         ('id', '=', post),
         ('active', '=', True),
+        ('visibility', 'in', _visibility()),
         ('galatea_website', '=', GALATEA_WEBSITE),
         ]
     posts = Post.search_read(domain, limit=1, fields_names=POST_FIELD_NAMES)
@@ -167,6 +180,7 @@ def post(lang, slug):
     posts = Post.search([
         ('slug', '=', slug),
         ('active', '=', True),
+        ('visibility', 'in', _visibility()),
         ('galatea_website', '=', GALATEA_WEBSITE),
         ], limit=1)
 
@@ -206,9 +220,10 @@ def keys(lang, key):
         page = 1
 
     domain = [
-        ('active', '=', True),
-        ('galatea_website', '=', GALATEA_WEBSITE),
         ('metakeywords', 'ilike', '%'+key+'%'),
+        ('active', '=', True),
+        ('visibility', 'in', _visibility()),
+        ('galatea_website', '=', GALATEA_WEBSITE),
         ]
     total = Post.search_count(domain)
     offset = (page-1)*LIMIT
@@ -252,8 +267,9 @@ def users(lang, user):
         abort(404)
 
     domain = [
-        ('active', '=', True),
         ('create_uid', '=', user),
+        ('active', '=', True),
+        ('visibility', 'in', _visibility()),
         ('galatea_website', '=', GALATEA_WEBSITE),
         ]
     total = Post.search_count(domain)
@@ -316,6 +332,7 @@ def posts(lang):
 
     domain = [
         ('active', '=', True),
+        ('visibility', 'in', _visibility()),
         ('galatea_website', '=', GALATEA_WEBSITE),
         ]
     total = Post.search_count(domain)
