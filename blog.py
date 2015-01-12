@@ -139,18 +139,20 @@ def comment(lang):
         abort(404)
     post, = posts
 
-    if not COMMENTS:
+    if not website.blog_comment:
         flash(_('Not available to publish comments.'), 'danger')
-    elif not session.get('user'):
-        flash(_('Loging to publish comments.'), 'danger')
+    elif not website.blog_anonymous and not session['user']:
+        flash(_('Not available to publish comments and anonymous users.' \
+            ' Please, login in'), 'danger')
     elif not comment or not post:
         flash(_('Add a comment to publish.'), 'danger')
     else:
-        Comment.create([{
-            'post': post['id'],
-            'user': session['user'],
-            'description': comment,
-            }])
+        comment = Comment()
+        comment.post = post['id']
+        comment.user = session['user'] if session.get('user') \
+            else website.blog_anonymous_user.id
+        comment.description = comment
+        comment.save()
         flash(_('Comment published successfully.'), 'success')
 
         mail = Mail(current_app)
