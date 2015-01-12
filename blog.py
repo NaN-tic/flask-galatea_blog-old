@@ -25,7 +25,7 @@ COMMENTS = current_app.config.get('TRYTON_BLOG_COMMENTS', True)
 WHOOSH_MAX_LIMIT = current_app.config.get('WHOOSH_MAX_LIMIT', 500)
 
 POST_FIELD_NAMES = ['name', 'slug', 'description', 'comment', 'comments',
-    'metakeywords', 'create_uid', 'create_uid.name', 'post_create_date']
+    'metakeywords', 'user', 'user.rec_name', 'post_create_date']
 BLOG_SCHEMA_PARSE_FIELDS = ['title', 'content']
 
 def _visibility():
@@ -266,15 +266,12 @@ def users(lang, user):
     except:
         abort(404)
 
-    domain = [
-        ('create_uid', '=', user),
-        ('active', '=', True),
-        ('visibility', 'in', _visibility()),
-        ('galatea_website', '=', GALATEA_WEBSITE),
-        ]
-    total = Post.search_count(domain)
-    if not total:
+    users = User.search([
+        ('id', '=', user)
+        ], limit=1)
+    if not users:
         abort(404)
+    user, = users
 
     try:
         page = int(request.args.get('page', 1))
@@ -282,17 +279,19 @@ def users(lang, user):
         page = 1
 
     domain = [
+        ('user', '=', user.id),
         ('active', '=', True),
-        ('create_uid', '=', user),
+        ('visibility', 'in', _visibility()),
         ('galatea_website', '=', GALATEA_WEBSITE),
         ]
     total = Post.search_count(domain)
     offset = (page-1)*LIMIT
 
+    if not total:
+        abort(404)
+
     order = [('create_date', 'DESC'), ('id', 'DESC')]
     posts = Post.search_read(domain, offset, LIMIT, order, POST_FIELD_NAMES)
-
-    user = User(user)
 
     pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
 
