@@ -200,7 +200,6 @@ def post(lang, slug):
             website=website,
             post=post,
             breadcrumbs=breadcrumbs,
-            cache_prefix='blog-post-%s-%s' % (post.id, lang),
             )
 
 @blog.route("/key/<key>", endpoint="key")
@@ -247,7 +246,6 @@ def keys(lang, key):
             posts=posts,
             pagination=pagination,
             breadcrumbs=breadcrumbs,
-            cache_prefix='blog-post-key-%s-%s-%s' % (lang, key, page),
             )
 
 @blog.route("/user/<user>", endpoint="user")
@@ -310,7 +308,6 @@ def users(lang, user):
             user=user,
             pagination=pagination,
             breadcrumbs=breadcrumbs,
-            cache_prefix='blog-post-user-%s-%s-%s' % (lang, user, page),
             )
 
 @blog.route("/", endpoint="posts")
@@ -353,5 +350,4 @@ def posts(lang):
             posts=posts,
             pagination=pagination,
             breadcrumbs=breadcrumbs,
-            cache_prefix='blog-post-all-%s-%s' % (lang, page),
             )
