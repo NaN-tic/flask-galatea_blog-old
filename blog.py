@@ -24,7 +24,7 @@ LIMIT = current_app.config.get('TRYTON_PAGINATION_BLOG_LIMIT', 20)
 COMMENTS = current_app.config.get('TRYTON_BLOG_COMMENTS', True)
 WHOOSH_MAX_LIMIT = current_app.config.get('WHOOSH_MAX_LIMIT', 500)
 
-POST_FIELD_NAMES = ['name', 'slug', 'description', 'comment', 'comments',
+POST_FIELD_NAMES = ['name', 'slug', 'description', 'comment', 'total_comments',
     'metakeywords', 'user', 'user.rec_name', 'post_create_date']
 BLOG_SCHEMA_PARSE_FIELDS = ['title', 'content']
 
