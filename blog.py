@@ -147,12 +147,12 @@ def comment(lang):
     elif not comment or not post:
         flash(_('Add a comment to publish.'), 'danger')
     else:
-        comment = Comment()
-        comment.post = post['id']
-        comment.user = session['user'] if session.get('user') \
+        c = Comment()
+        c.post = post['id']
+        c.user = session['user'] if session.get('user') \
             else website.blog_anonymous_user.id
-        comment.description = comment
-        comment.save()
+        c.description = comment
+        c.save()
         flash(_('Comment published successfully.'), 'success')
 
         mail = Mail(current_app)
