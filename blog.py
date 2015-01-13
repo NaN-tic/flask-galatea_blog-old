@@ -300,7 +300,7 @@ def users(lang, user):
         'slug': url_for('.posts', lang=g.language),
         'name': _('Blog'),
         }, {
-        'slug': url_for('.user', lang=g.language, user=user),
+        'slug': url_for('.user', lang=g.language, user=user.id),
         'name': user.name,
         }]
 
