@@ -206,7 +206,7 @@ def post(lang, slug):
 
 @blog.route("/key/<key>", endpoint="key")
 @tryton.transaction()
-def keys(lang, key):
+def key(lang, key):
     '''Posts by Key'''
     websites = Website.search([
         ('id', '=', GALATEA_WEBSITE),
@@ -248,6 +248,7 @@ def keys(lang, key):
             posts=posts,
             pagination=pagination,
             breadcrumbs=breadcrumbs,
+            key=key,
             )
 
 @blog.route("/user/<user>", endpoint="user")
@@ -301,7 +302,7 @@ def users(lang, user):
         'name': _('Blog'),
         }, {
         'slug': url_for('.user', lang=g.language, user=user.id),
-        'name': user.name,
+        'name': user.rec_name,
         }]
 
     return render_template('blog-user.html',
