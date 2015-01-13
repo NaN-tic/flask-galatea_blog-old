@@ -17,7 +17,7 @@ DISPLAY_MSG = lazy_gettext('Displaying <b>{start} - {end}</b> of <b>{total}</b>'
 Website = tryton.pool.get('galatea.website')
 Post = tryton.pool.get('galatea.blog.post')
 Comment = tryton.pool.get('galatea.blog.comment')
-User = tryton.pool.get('res.user')
+User = tryton.pool.get('galatea.user')
 
 GALATEA_WEBSITE = current_app.config.get('TRYTON_GALATEA_SITE')
 LIMIT = current_app.config.get('TRYTON_PAGINATION_BLOG_LIMIT', 20)
