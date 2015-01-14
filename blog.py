@@ -160,8 +160,8 @@ def comment(lang):
         mail_to = current_app.config.get('DEFAULT_MAIL_SENDER')
         subject =  '%s - %s' % (current_app.config.get('TITLE'), _('New comment published'))
         msg = Message(subject,
-                body = render_template('emails/blog-comment-text.jinja', post=post),
-                html = render_template('emails/blog-comment-html.jinja', post=post),
+                body = render_template('emails/blog-comment-text.jinja', post=post, comment=comment),
+                html = render_template('emails/blog-comment-html.jinja', post=post, comment=comment),
                 sender = mail_to,
                 recipients = [mail_to])
         mail.send(msg)
