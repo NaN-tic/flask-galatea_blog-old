@@ -23,9 +23,6 @@ GALATEA_WEBSITE = current_app.config.get('TRYTON_GALATEA_SITE')
 LIMIT = current_app.config.get('TRYTON_PAGINATION_BLOG_LIMIT', 20)
 COMMENTS = current_app.config.get('TRYTON_BLOG_COMMENTS', True)
 WHOOSH_MAX_LIMIT = current_app.config.get('WHOOSH_MAX_LIMIT', 500)
-
-POST_FIELD_NAMES = ['name', 'slug', 'description', 'comment', 'total_comments',
-    'metakeywords', 'user', 'user.rec_name', 'post_create_date']
 BLOG_SCHEMA_PARSE_FIELDS = ['title', 'content']
 
 def _visibility():
@@ -102,7 +99,7 @@ def search(lang):
         ]
     order = [('post_create_date', 'DESC'), ('id', 'DESC')]
 
-    posts = Post.search_read(domain, order=order, fields_names=POST_FIELD_NAMES)
+    posts = Post.search(domain, order=order)
 
     pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
 
@@ -134,7 +131,7 @@ def comment(lang):
         ('visibility', 'in', _visibility()),
         ('galatea_website', '=', GALATEA_WEBSITE),
         ]
-    posts = Post.search_read(domain, limit=1, fields_names=POST_FIELD_NAMES)
+    posts = Post.search(domain, limit=1)
     if not posts:
         abort(404)
     post, = posts
@@ -230,7 +227,7 @@ def key(lang, key):
     offset = (page-1)*LIMIT
 
     order = [('post_create_date', 'DESC'), ('id', 'DESC')]
-    posts = Post.search_read(domain, offset, LIMIT, order, POST_FIELD_NAMES)
+    posts = Post.search(domain, offset, LIMIT, order)
 
     pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
 
@@ -292,7 +289,7 @@ def users(lang, user):
         abort(404)
 
     order = [('post_create_date', 'DESC'), ('id', 'DESC')]
-    posts = Post.search_read(domain, offset, LIMIT, order, POST_FIELD_NAMES)
+    posts = Post.search(domain, offset, LIMIT, order)
 
     pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
 
@@ -338,7 +335,7 @@ def posts(lang):
     offset = (page-1)*LIMIT
 
     order = [('post_create_date', 'DESC'), ('id', 'DESC')]
-    posts = Post.search_read(domain, offset, LIMIT, order, POST_FIELD_NAMES)
+    posts = Post.search(domain, offset, LIMIT, order)
 
     pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
 
