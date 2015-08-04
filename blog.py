@@ -81,6 +81,16 @@ def search(lang):
     except ValueError:
         page = 1
 
+    # limit
+    if request.args.get('limit'):
+        try:
+            limit = int(request.args.get('limit'))
+            session['blog_limit'] = limit
+        except:
+            limit = LIMIT
+    else:
+        limit = session.get('blog_limit', LIMIT)
+
     # Search
     ix = index.open_dir(schema_dir)
     query = q.replace('+', ' AND ').replace('-', ' NOT ')
@@ -101,7 +111,7 @@ def search(lang):
 
     posts = Post.search(domain, order=order)
 
-    pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
+    pagination = Pagination(page=page, total=total, per_page=limit, display_msg=DISPLAY_MSG, bs_version='3')
 
     return render_template('blog-search.html',
             website=website,
@@ -217,6 +227,16 @@ def key(lang, key):
     except ValueError:
         page = 1
 
+    # limit
+    if request.args.get('limit'):
+        try:
+            limit = int(request.args.get('limit'))
+            session['blog_limit'] = limit
+        except:
+            limit = LIMIT
+    else:
+        limit = session.get('blog_limit', LIMIT)
+
     domain = [
         ('metakeywords', 'ilike', '%'+key+'%'),
         ('active', '=', True),
@@ -224,12 +244,12 @@ def key(lang, key):
         ('galatea_website', '=', GALATEA_WEBSITE),
         ]
     total = Post.search_count(domain)
-    offset = (page-1)*LIMIT
+    offset = (page-1)*limit
 
     order = [('post_create_date', 'DESC'), ('id', 'DESC')]
-    posts = Post.search(domain, offset, LIMIT, order)
+    posts = Post.search(domain, offset, limit, order)
 
-    pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
+    pagination = Pagination(page=page, total=total, per_page=limit, display_msg=DISPLAY_MSG, bs_version='3')
 
     #breadcumbs
     breadcrumbs = [{
@@ -276,6 +296,16 @@ def users(lang, user):
     except ValueError:
         page = 1
 
+    # limit
+    if request.args.get('limit'):
+        try:
+            limit = int(request.args.get('limit'))
+            session['blog_limit'] = limit
+        except:
+            limit = LIMIT
+    else:
+        limit = session.get('blog_limit', LIMIT)
+
     domain = [
         ('user', '=', user.id),
         ('active', '=', True),
@@ -289,9 +319,9 @@ def users(lang, user):
         abort(404)
 
     order = [('post_create_date', 'DESC'), ('id', 'DESC')]
-    posts = Post.search(domain, offset, LIMIT, order)
+    posts = Post.search(domain, offset, limit, order)
 
-    pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
+    pagination = Pagination(page=page, total=total, per_page=limit, display_msg=DISPLAY_MSG, bs_version='3')
 
     #breadcumbs
     breadcrumbs = [{
@@ -326,18 +356,28 @@ def posts(lang):
     except ValueError:
         page = 1
 
+    # limit
+    if request.args.get('limit'):
+        try:
+            limit = int(request.args.get('limit'))
+            session['blog_limit'] = limit
+        except:
+            limit = LIMIT
+    else:
+        limit = session.get('blog_limit', LIMIT)
+
     domain = [
         ('active', '=', True),
         ('visibility', 'in', _visibility()),
         ('galatea_website', '=', GALATEA_WEBSITE),
         ]
     total = Post.search_count(domain)
-    offset = (page-1)*LIMIT
+    offset = (page-1)*limit
 
     order = [('post_create_date', 'DESC'), ('id', 'DESC')]
-    posts = Post.search(domain, offset, LIMIT, order)
+    posts = Post.search(domain, offset, limit, order)
 
-    pagination = Pagination(page=page, total=total, per_page=LIMIT, display_msg=DISPLAY_MSG, bs_version='3')
+    pagination = Pagination(page=page, total=total, per_page=limit, display_msg=DISPLAY_MSG, bs_version='3')
 
     #breadcumbs
     breadcrumbs = [{
