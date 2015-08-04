@@ -99,7 +99,7 @@ def search(lang):
     with ix.searcher() as s:
         all_results = s.search_page(query, 1, pagelen=WHOOSH_MAX_LIMIT)
         total = all_results.scored_length()
-        results = s.search_page(query, page, pagelen=LIMIT) # by pagination
+        results = s.search_page(query, page, pagelen=limit) # by pagination
         res = [result.get('id') for result in results]
 
     domain = [
