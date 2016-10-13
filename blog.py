@@ -2,9 +2,9 @@ from flask import Blueprint, render_template, current_app, abort, g, \
     request, url_for, session, flash, redirect
 from galatea.tryton import tryton
 from galatea.utils import get_tryton_language
-from flask.ext.paginate import Pagination
-from flask.ext.babel import gettext as _, lazy_gettext
-from flask.ext.mail import Mail, Message
+from flask_paginate import Pagination
+from flask_babel import gettext as _, lazy_gettext
+from flask_mail import Mail, Message
 from trytond.config import config as tryton_config
 from whoosh import index
 from whoosh.qparser import MultifieldParser
