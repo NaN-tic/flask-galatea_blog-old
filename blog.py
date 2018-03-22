@@ -37,12 +37,7 @@ def _visibility():
 @tryton.transaction()
 def search(lang):
     '''Search'''
-    websites = Website.search([
-        ('id', '=', GALATEA_WEBSITE),
-        ], limit=1)
-    if not websites:
-        abort(404)
-    website, = websites
+    website = Website(GALATEA_WEBSITE)
 
     WHOOSH_BLOG_DIR = current_app.config.get('WHOOSH_BLOG_DIR')
     if not WHOOSH_BLOG_DIR:
@@ -125,12 +120,7 @@ def search(lang):
 @tryton.transaction()
 def comment(lang):
     '''Add Comment'''
-    websites = Website.search([
-        ('id', '=', GALATEA_WEBSITE),
-        ], limit=1)
-    if not websites:
-        abort(404)
-    website, = websites
+    website = Website(GALATEA_WEBSITE)
 
     post = request.form.get('post')
     comment = request.form.get('comment')
@@ -179,12 +169,7 @@ def comment(lang):
 @tryton.transaction()
 def post(lang, slug):
     '''Post detaill'''
-    websites = Website.search([
-        ('id', '=', GALATEA_WEBSITE),
-        ], limit=1)
-    if not websites:
-        abort(404)
-    website, = websites
+    website = Website(GALATEA_WEBSITE)
 
     posts = Post.search([
         ('slug', '=', slug),
@@ -215,12 +200,7 @@ def post(lang, slug):
 @tryton.transaction()
 def key(lang, key):
     '''Posts by Key'''
-    websites = Website.search([
-        ('id', '=', GALATEA_WEBSITE),
-        ], limit=1)
-    if not websites:
-        abort(404)
-    website, = websites
+    website = Website(GALATEA_WEBSITE)
 
     try:
         page = int(request.args.get('page', 1))
@@ -272,12 +252,7 @@ def key(lang, key):
 @tryton.transaction()
 def users(lang, user):
     '''Posts by User'''
-    websites = Website.search([
-        ('id', '=', GALATEA_WEBSITE),
-        ], limit=1)
-    if not websites:
-        abort(404)
-    website, = websites
+    website = Website(GALATEA_WEBSITE)
 
     try:
         user = int(user)
@@ -344,12 +319,7 @@ def users(lang, user):
 @tryton.transaction()
 def posts(lang):
     '''Posts'''
-    websites = Website.search([
-        ('id', '=', GALATEA_WEBSITE),
-        ], limit=1)
-    if not websites:
-        abort(404)
-    website, = websites
+    website = Website(GALATEA_WEBSITE)
 
     try:
         page = int(request.args.get('page', 1))
