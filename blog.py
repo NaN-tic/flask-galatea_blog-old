@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, current_app, abort, g, \
     request, url_for, session, flash, redirect
 from galatea.tryton import tryton
-from galatea.utils import get_tryton_language
 from flask_paginate import Pagination
 from flask_babel import gettext as _, lazy_gettext
 from flask_mail import Mail, Message
@@ -44,10 +43,8 @@ def search(lang):
         abort(404)
 
     db_name = current_app.config.get('TRYTON_DATABASE')
-    locale = get_tryton_language(lang)
-
     schema_dir = os.path.join(tryton_config.get('database', 'path'),
-        db_name, 'whoosh', WHOOSH_BLOG_DIR, locale.lower())
+        db_name, 'whoosh', WHOOSH_BLOG_DIR, lang)
 
     if not os.path.exists(schema_dir):
         abort(404)

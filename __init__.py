@@ -1,2 +1,1 @@
-from blog import *
-
+from .blog import *
